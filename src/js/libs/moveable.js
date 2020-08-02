@@ -13,13 +13,13 @@ export default function Moveable(opt) {
         }, opt),
 
         _keyboard(e) {
-            const {options} = that;
-            const {type, key} = e;
+            const { options } = that;
+            const { type, key } = e;
 
             // Check to see if the Movable is focused and then move it based on arrow key inputs
             // For improved accessibility
             if (document.activeElement === options.wrapper) {
-                const {lock} = that.options;
+                const { lock } = that.options;
                 const up = key === 'ArrowUp';
                 const right = key === 'ArrowRight';
                 const down = key === 'ArrowDown';
@@ -63,10 +63,11 @@ export default function Moveable(opt) {
         },
 
         _tapmove(evt) {
-            const {options, cache} = that;
-            const {lock, element, wrapper} = options;
+            const { options, cache } = that;
+            const { lock, element, wrapper } = options;
             const b = wrapper.getBoundingClientRect();
-
+            if (b.width == 0 || b.height == 0)
+                return;
             let x = 0, y = 0;
             if (evt) {
                 const touch = evt && evt.touches && evt.touches[0];
@@ -101,7 +102,7 @@ export default function Moveable(opt) {
                 element.style.top = `calc(${y / b.height * 100}% - ${element.offsetHeight / 2}px)`;
             }
 
-            that.cache = {x: x / b.width, y: y / b.height};
+            that.cache = { x: x / b.width, y: y / b.height };
             const cx = clamp(x / b.width);
             const cy = clamp(y / b.height);
 
@@ -126,7 +127,7 @@ export default function Moveable(opt) {
         },
 
         update(x = 0, y = 0) {
-            const {left, top, width, height} = that.options.wrapper.getBoundingClientRect();
+            const { left, top, width, height } = that.options.wrapper.getBoundingClientRect();
 
             if (that.options.lock === 'h') {
                 y = x;
@@ -139,7 +140,7 @@ export default function Moveable(opt) {
         },
 
         destroy() {
-            const {options, _tapstart, _keyboard} = that;
+            const { options, _tapstart, _keyboard } = that;
             _.off(document, ['keydown', 'keyup'], _keyboard);
             _.off([options.wrapper, options.element], 'mousedown', _tapstart);
             _.off([options.wrapper, options.element], 'touchstart', _tapstart, {
@@ -149,7 +150,7 @@ export default function Moveable(opt) {
     };
 
     // Initilize
-    const {options, _tapstart, _keyboard} = that;
+    const { options, _tapstart, _keyboard } = that;
     _.on([options.wrapper, options.element], 'mousedown', _tapstart);
     _.on([options.wrapper, options.element], 'touchstart', _tapstart, {
         passive: false
